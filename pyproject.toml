@@ -31,6 +31,7 @@ compression = [
   "python-snappy>=0.7.3",
   "zstandard>=0.22.0",
 ]
+benchmark = ["pandas>=2.0"]
 test = ["pytest>=8.0", "pytest-cov>=5.0"]
 dev = [
   "build>=1.2",

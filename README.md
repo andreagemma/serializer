@@ -126,6 +126,28 @@ value = serializer.loads(
 > data from an untrusted or unauthenticated source. CRC32 detects accidental corruption;
 > it does not provide cryptographic authenticity.
 
+## Codec benchmark
+
+The included benchmark measures median end-to-end serialization and compression time
+for every concrete codec and compression level (0-9). By default, it uses a DataFrame
+containing 10 integer columns and 1,000,000 rows.
+
+```bash
+python -m pip install -e ".[benchmark,compression]"
+python benchmarks/benchmark_codecs.py
+```
+
+Progress is written to stderr and the final pivot table to stdout as Markdown. This
+makes it possible to save a clean report with:
+
+```bash
+python benchmarks/benchmark_codecs.py > benchmark-results.md
+```
+
+Use `--help` to change the dataset size, repetitions, backend, codecs, or levels.
+Unavailable optional codecs are reported as `N/A` rather than silently benchmarked
+without compression.
+
 ## Development
 
 ```bash
