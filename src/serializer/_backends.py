@@ -77,6 +77,13 @@ def validate_level(level: int) -> None:
         raise ValueError("level must be between 0 and 9")
 
 
+def _as_bytes(value: Any, feature: str) -> bytes:
+    """Validate the bytes-like contract of a dynamically loaded backend."""
+    if not isinstance(value, bytes | bytearray | memoryview):
+        raise TypeError(f"{feature} returned {type(value).__name__}, expected bytes-like data")
+    return bytes(value)
+
+
 def _missing_dependency(feature: str, package: str, fallback: bool) -> None:
     action = "using the safe default fallback" if fallback else "no fallback is permitted"
     warnings.warn(
@@ -133,19 +140,24 @@ def compress(data: bytes, name: str | None, level: int, *, fallback: bool) -> tu
             if exc.name != "zstandard":
                 raise
         else:
-            return zstandard.ZstdCompressor(level=max(1, level)).compress(data), "zstd"
+            compressed = zstandard.ZstdCompressor(level=max(1, level)).compress(data)
+            return _as_bytes(compressed, "zstd compression"), "zstd"
         codec = "gzip"
 
     if codec == "none":
         return data, codec
     if codec == "gzip":
-        return import_module("gzip").compress(data, compresslevel=level), codec
+        compressed = import_module("gzip").compress(data, compresslevel=level)
+        return _as_bytes(compressed, "gzip compression"), codec
     if codec == "bz2":
-        return import_module("bz2").compress(data, compresslevel=max(1, level)), codec
+        compressed = import_module("bz2").compress(data, compresslevel=max(1, level))
+        return _as_bytes(compressed, "bz2 compression"), codec
     if codec == "lzma":
-        return import_module("lzma").compress(data, preset=level), codec
+        compressed = import_module("lzma").compress(data, preset=level)
+        return _as_bytes(compressed, "lzma compression"), codec
     if codec == "zlib":
-        return import_module("zlib").compress(data, level=level), codec
+        compressed = import_module("zlib").compress(data, level=level)
+        return _as_bytes(compressed, "zlib compression"), codec
     if codec == "zip":
         zipfile = import_module("zipfile")
         buffer = io.BytesIO()
@@ -169,11 +181,14 @@ def compress(data: bytes, name: str | None, level: int, *, fallback: bool) -> tu
         return data, "none"
 
     if codec == "zstd":
-        return module.ZstdCompressor(level=max(1, level)).compress(data), codec
+        compressed = module.ZstdCompressor(level=max(1, level)).compress(data)
+        return _as_bytes(compressed, "zstd compression"), codec
     if codec == "lz4":
-        return module.compress(data, compression_level=level), codec
+        compressed = module.compress(data, compression_level=level)
+        return _as_bytes(compressed, "lz4 compression"), codec
     if codec == "snappy":
-        return module.compress(data), codec
+        compressed = module.compress(data)
+        return _as_bytes(compressed, "snappy compression"), codec
 
     cname = {
         "blosclz": "blosclz",
@@ -181,7 +196,8 @@ def compress(data: bytes, name: str | None, level: int, *, fallback: bool) -> tu
         "blosc-zlib": "zlib",
         "blosc-zstd": "zstd",
     }[codec]
-    return module.compress(data, typesize=1, cname=cname, clevel=level), codec
+    compressed = module.compress(data, typesize=1, cname=cname, clevel=level)
+    return _as_bytes(compressed, f"{codec} compression"), codec
 
 
 def decompress(data: bytes, codec: str) -> bytes:
@@ -192,20 +208,20 @@ def decompress(data: bytes, codec: str) -> bytes:
     if codec == "none":
         return data
     if codec == "gzip":
-        return import_module("gzip").decompress(data)
+        return _as_bytes(import_module("gzip").decompress(data), "gzip decompression")
     if codec == "bz2":
-        return import_module("bz2").decompress(data)
+        return _as_bytes(import_module("bz2").decompress(data), "bz2 decompression")
     if codec == "lzma":
-        return import_module("lzma").decompress(data)
+        return _as_bytes(import_module("lzma").decompress(data), "lzma decompression")
     if codec == "zlib":
-        return import_module("zlib").decompress(data)
+        return _as_bytes(import_module("zlib").decompress(data), "zlib decompression")
     if codec == "zip":
         zipfile = import_module("zipfile")
         with zipfile.ZipFile(io.BytesIO(data), "r") as archive:
             names = archive.namelist()
             if names != ["payload"]:
                 raise ValueError("invalid serializer zip payload")
-            return archive.read("payload")
+            return _as_bytes(archive.read("payload"), "zip decompression")
 
     module_name = {
         "zstd": "zstandard",
@@ -219,7 +235,8 @@ def decompress(data: bytes, codec: str) -> bytes:
     module = _optional_module(module_name, f"{codec} decompression", False)
     assert module is not None  # _optional_module raises when fallback=False
     if codec == "zstd":
-        return module.ZstdDecompressor().decompress(data)
+        decompressed = module.ZstdDecompressor().decompress(data)
+        return _as_bytes(decompressed, "zstd decompression")
     if codec in {"lz4", "snappy"}:
-        return module.decompress(data)
-    return module.decompress(data)
+        return _as_bytes(module.decompress(data), f"{codec} decompression")
+    return _as_bytes(module.decompress(data), f"{codec} decompression")

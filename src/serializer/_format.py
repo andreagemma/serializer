@@ -8,10 +8,10 @@ from dataclasses import dataclass
 from typing import Final
 
 from ._backends import (
-    BACKENDS_BY_ID,
     BACKEND_IDS,
-    COMPRESSIONS_BY_ID,
+    BACKENDS_BY_ID,
     COMPRESSION_IDS,
+    COMPRESSIONS_BY_ID,
 )
 from .exceptions import FormatError
 
