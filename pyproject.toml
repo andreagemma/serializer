@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "serializer"
+version = "0.1.0"
+description = "Robust, self-describing Python object serialization with optional compression"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["serialization", "dill", "pickle", "compression"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+]
+dependencies = ["dill>=0.3.8"]
+
+[project.optional-dependencies]
+compression = [
+  "blosc>=1.11.2",
+  "lz4>=4.3.3",
+  "python-snappy>=0.7.3",
+  "zstandard>=0.22.0",
+]
+test = ["pytest>=8.0", "pytest-cov>=5.0"]
+dev = [
+  "build>=1.2",
+  "mypy>=1.10",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.5",
+  "twine>=5.1",
+]
+
+[project.urls]
+Documentation = "https://github.com/OWNER/serializer#readme"
+Issues = "https://github.com/OWNER/serializer/issues"
+Source = "https://github.com/OWNER/serializer"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+serializer = ["py.typed"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["serializer"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src"]
