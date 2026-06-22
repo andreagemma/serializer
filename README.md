@@ -167,10 +167,18 @@ makes it possible to save a clean report with:
 python benchmarks/benchmark_codecs.py > benchmark-results.md
 ```
 
+To run the benchmark and replace the results section below automatically:
+
+```bash
+python benchmarks/benchmark_codecs.py --update-readme
+```
+
 Use `--help` to change the dataset size, repetitions, backend, codecs, levels, or
 README path. Missing dependencies are never replaced by uncompressed fallback data.
 
 ### Latest DataFrame benchmark
+
+<!-- ga-serializer-benchmark:start -->
 
 **Dataset:** `100,000 rows x 10 columns` | **Backend:** `pickle` | **Repetitions:** `3`
 
@@ -209,6 +217,8 @@ README path. Missing dependencies are never replaced by uncompressed fallback da
 | lz4hc | 8000993 | 4003057 | 4003057 | 4004990 | 4004227 | 4003927 | 4003362 | 4003362 | 4003362 | 4002031 |
 | blosc-zlib | 8000993 | 1513768 | 1514031 | 1512021 | 1515866 | 1515689 | 1515685 | 1513995 | 1513882 | 1510239 |
 | blosc-zstd | 8000993 | 1032273 | 1085234 | 1137459 | 1024959 | 1022071 | 1022614 | 1022197 | 1022213 | 415175 |
+
+<!-- ga-serializer-benchmark:end -->
 
 ## Development
 
