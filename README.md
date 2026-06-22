@@ -231,4 +231,14 @@ python -m build
 twine check dist/*
 ```
 
+## Releasing
+
+Update `__version__` in `src/serializer/_version.py`, then run the **Create release**
+workflow from GitHub Actions. By default, it creates the tag `v<version>`, generates
+the GitHub Release notes, and starts the build and PyPI publication workflow.
+
+The workflow accepts an optional `tag` input when a different tag is required. Package
+metadata reads the same `_version.py` value, so code and distribution versions cannot
+drift.
+
 Released under the [MIT License](LICENSE).

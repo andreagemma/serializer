@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ga-serializer"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Robust, self-describing Python object serialization with optional compression"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -43,9 +43,9 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/OWNER/serializer#readme"
-Issues = "https://github.com/OWNER/serializer/issues"
-Source = "https://github.com/OWNER/serializer"
+Documentation = "https://github.com/andreagemma/serializer#readme"
+Issues = "https://github.com/andreagemma/serializer/issues"
+Source = "https://github.com/andreagemma/serializer"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -55,6 +55,9 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 serializer = ["py.typed"]
+
+[tool.setuptools.dynamic]
+version = {attr = "serializer._version.__version__"}
 
 [tool.pytest.ini_options]
 addopts = "-ra --strict-markers"

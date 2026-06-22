@@ -6,6 +6,12 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the built distributions to PyPI
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -29,7 +35,7 @@ jobs:
           if-no-files-found: error
 
   publish:
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.publish)
     needs: build
     runs-on: ubuntu-latest
     environment:
