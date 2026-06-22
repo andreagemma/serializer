@@ -1,57 +1,70 @@
 # ga-serializer
 
-`serializer` salva oggetti Python in byte, file o stream usando un formato
-versionato e auto-descrittivo. Preferisce `dill`, usa `pickle` con un warning se
-`dill` non è disponibile e carica i compressori opzionali solo quando servono.
+[![CI](https://github.com/andreagemma/serializer/actions/workflows/ci.yml/badge.svg)](https://github.com/andreagemma/serializer/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/ga-serializer.svg)](https://pypi.org/project/ga-serializer/)
+[![Python](https://img.shields.io/pypi/pyversions/ga-serializer.svg)](https://pypi.org/project/ga-serializer/)
 
-> **Sicurezza:** come `pickle` e `dill`, questa libreria può eseguire codice in
-> fase di caricamento. Non deserializzare mai dati provenienti da fonti non fidate.
+Robust Python object serialization with lazy backends, optional compression, and a
+self-describing binary format.
 
-## Installazione
+`ga-serializer` uses `dill` by default to support a broad range of Python objects.
+If `dill` is unavailable, it emits a warning and falls back to the standard-library
+`pickle` module.
+
+## Installation
 
 ```bash
 pip install ga-serializer
 ```
 
-Per tutti i compressori opzionali:
+Install all optional compression backends with:
 
 ```bash
 pip install "ga-serializer[compression]"
 ```
 
-Il pacchetto richiede Python 3.10 o successivo. `dill` è una dipendenza standard;
-il fallback a `pickle` copre anche installazioni minimali eseguite con `--no-deps`.
+The distribution is named `ga-serializer`; the Python package is imported as
+`serializer`.
 
-## API standard
+## Quick start
 
 ```python
 import serializer
 
-payload = serializer.dumps({"answer": 42}, compression="gzip", level=7)
-value = serializer.loads(payload)  # il codec è registrato nel payload
+data = {"items": [1, 2, 3], "enabled": True}
 
-serializer.dump(value, "state.srl", compression="lzma")
-restored = serializer.load("state.srl")
+payload = serializer.dumps(data, compression="gzip", level=7)
+restored = serializer.loads(payload)
+
+serializer.dump(data, "state.srl", compression="lzma")
+restored_from_file = serializer.load("state.srl")
 ```
 
-`dump` e `load` accettano sia percorsi sia stream binari aperti. Gli stream
-forniti dal chiamante non vengono chiusi.
+Serialized envelopes record the backend and compression codec, so `loads()` and
+`load()` do not require those parameters when reading data created by this library.
+
+## Binary streams
+
+`dump()` and `load()` accept filesystem paths or open binary streams. User-provided
+streams are never closed.
 
 ```python
 from io import BytesIO
+
 import serializer
 
 stream = BytesIO()
 serializer.dump([1, 2, 3], stream, compression="zlib")
+
 stream.seek(0)
 assert serializer.load(stream) == [1, 2, 3]
 ```
 
-## API fluent / method chaining
+## Fluent configuration
 
-`Serializer` è una configurazione immutabile e riutilizzabile. Ogni metodo di
-configurazione restituisce una nuova istanza; `dump` restituisce l'istanza stessa
-per concatenare più scritture.
+`Serializer` is an immutable, reusable configuration object. Configuration methods
+return a new instance, while `dump()` returns the current instance to support chained
+writes.
 
 ```python
 from serializer import Serializer
@@ -60,62 +73,68 @@ codec = (
     Serializer()
     .using("gzip")
     .at_level(9)
-    .with_backend("auto")  # dill, poi pickle come fallback
+    .with_backend("auto")
     .atomic()
 )
 
-codec.dump({"one": 1}, "one.srl").dump({"two": 2}, "two.srl")
-assert codec.load("one.srl") == {"one": 1}
+codec.dump({"id": 1}, "one.srl").dump({"id": 2}, "two.srl")
+assert codec.load("one.srl") == {"id": 1}
 ```
 
-Usare `.strict()` per trasformare l'assenza di un compressore richiesto in
-`MissingDependencyError`, invece del fallback senza compressione.
+Call `.strict()` to disable dependency fallbacks. The functional API provides the
+equivalent `fallback=False` argument.
 
-## Compressioni
+## Compression
 
-Sempre disponibili perché incluse nella libreria standard:
+The following codecs are always available:
 
-- `gzip`, `bz2`, `lzma`, `zlib`, `zip`
-- `None` / `"none"` per nessuna compressione
-- `"auto"` per preferire Zstandard e ripiegare su gzip
+- `gzip`, `bz2`, `lzma`, `zlib`, and `zip`
+- `None` or `"none"` for no compression
+- `"auto"` to prefer Zstandard and otherwise use gzip
 
-Opzionali e importate in modo lazy:
+Optional codecs are imported only when requested:
 
-- `zstd` (`zstandard`)
-- `lz4` (`lz4`)
-- `snappy` (`python-snappy`)
-- `blosclz`, `lz4hc`, `blosc-zlib`, `blosc-zstd` (`blosc`)
+| Codec | Dependency |
+| --- | --- |
+| `zstd` | `zstandard` |
+| `lz4` | `lz4` |
+| `snappy` | `python-snappy` |
+| `blosclz`, `lz4hc`, `blosc-zlib`, `blosc-zstd` | `blosc` |
 
-Se una dipendenza opzionale manca durante la scrittura, il comportamento
-predefinito emette `DependencyWarning` e crea correttamente un payload non
-compresso. In lettura non viene mai finta una decompressione: se il codec
-necessario manca, viene emesso il warning e sollevato `MissingDependencyError`.
+When an explicitly requested optional compressor is unavailable during serialization,
+the default behavior emits `DependencyWarning` and writes an uncompressed envelope.
+Deserialization never pretends that compressed data is uncompressed: a missing decoder
+raises `MissingDependencyError`.
 
-## Formato e compatibilità
+## Legacy payloads
 
-Ogni payload nuovo contiene versione, backend, compressione, lunghezza e checksum
-CRC32. Questo permette a `loads` e `load` di riconoscere automaticamente come
-leggere i dati e di rifiutare file troncati o corrotti.
-
-Payload legacy senza header sono supportati specificando i parametri originali:
+Headerless pickle or dill payloads remain supported when their original settings are
+provided explicitly:
 
 ```python
-obj = serializer.loads(old_bytes, compression="gzip", backend="pickle")
+value = serializer.loads(
+    legacy_payload,
+    compression="gzip",
+    backend="pickle",
+)
 ```
 
-## Sviluppo e release
+## Security
+
+> [!WARNING]
+> `pickle` and `dill` may execute arbitrary code during deserialization. Never load
+> data from an untrusted or unauthenticated source. CRC32 detects accidental corruption;
+> it does not provide cryptographic authenticity.
+
+## Development
 
 ```bash
-python -m venv .venv
 python -m pip install -e ".[dev]"
+ruff check .
+mypy
 pytest
 python -m build
 twine check dist/*
 ```
 
-La CI prova Python 3.10–3.14 su Linux, Windows e macOS. La workflow di release
-costruisce wheel e sdist, li conserva come artifact e, sulle release GitHub,
-pubblica su PyPI tramite Trusted Publishing.
-
-Prima di pubblicare, sostituire `OWNER` negli URL di `pyproject.toml` con
-l'account GitHub effettivo e configurare su PyPI il relativo trusted publisher.
+Released under the [MIT License](LICENSE).
