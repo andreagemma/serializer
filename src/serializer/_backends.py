@@ -86,7 +86,7 @@ def _missing_dependency(feature: str, package: str, fallback: bool) -> None:
     )
     if not fallback:
         raise MissingDependencyError(
-            f"Install serializer[compression] (or {package}) to use {feature}."
+            f"Install ga-serializer[compression] (or {package}) to use {feature}."
         )
 
 

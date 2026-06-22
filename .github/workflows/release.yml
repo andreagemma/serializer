@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/serializer
+      url: https://pypi.org/p/ga-serializer
     permissions:
       id-token: write
     steps:

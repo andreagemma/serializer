@@ -1,4 +1,4 @@
-# serializer
+# ga-serializer
 
 `serializer` salva oggetti Python in byte, file o stream usando un formato
 versionato e auto-descrittivo. Preferisce `dill`, usa `pickle` con un warning se
@@ -10,13 +10,13 @@ versionato e auto-descrittivo. Preferisce `dill`, usa `pickle` con un warning se
 ## Installazione
 
 ```bash
-pip install serializer
+pip install ga-serializer
 ```
 
 Per tutti i compressori opzionali:
 
 ```bash
-pip install "serializer[compression]"
+pip install "ga-serializer[compression]"
 ```
 
 Il pacchetto richiede Python 3.10 o successivo. `dill` è una dipendenza standard;
