@@ -5,6 +5,7 @@ execute arbitrary code while loading.
 """
 
 from ._api import Serializer, dump, dumps, load, loads, save
+from .benchmark import COMPRESSION_CODECS, BenchmarkResult, benchmark
 from .exceptions import (
     DependencyWarning,
     FormatError,
@@ -17,6 +18,8 @@ from .exceptions import (
 __version__ = "0.1.0"
 
 __all__ = [
+    "BenchmarkResult",
+    "COMPRESSION_CODECS",
     "DependencyWarning",
     "FormatError",
     "MissingDependencyError",
@@ -25,6 +28,7 @@ __all__ = [
     "SerializerError",
     "SerializerWarning",
     "__version__",
+    "benchmark",
     "dump",
     "dumps",
     "load",
