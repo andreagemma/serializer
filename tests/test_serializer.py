@@ -140,6 +140,6 @@ class SerializerTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             serializer.dump(1, io.StringIO(), backend="pickle")  # type: ignore[arg-type]
 
-
+    
 if __name__ == "__main__":
     unittest.main()

@@ -18,7 +18,11 @@ def test_benchmark_returns_markdown_matrix() -> None:
     assert result.codecs == ("none", "gzip")
     assert result.levels == (0, 1)
     assert isinstance(result.value("gzip", 1), float)
+    assert isinstance(result.size("gzip", 1), int)
+    assert result.size("gzip", 1) > 0
     assert "| gzip |" in result.to_markdown()
+    assert "### Time" in result.to_markdown()
+    assert "### Serialized size" in result.to_markdown()
 
 
 def test_benchmark_marks_missing_codec_with_x() -> None:
@@ -46,4 +50,5 @@ def test_benchmark_marks_missing_codec_with_x() -> None:
         )
 
     assert result.values == (("x", "x"),)
+    assert result.sizes == (("x", "x"),)
     assert "| zstd | x | x |" in result.to_markdown()
