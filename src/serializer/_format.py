@@ -7,7 +7,12 @@ import zlib
 from dataclasses import dataclass
 from typing import Final
 
-from ._backends import BACKENDS_BY_ID, BACKEND_IDS, COMPRESSIONS_BY_ID, COMPRESSION_IDS
+from ._backends import (
+    BACKENDS_BY_ID,
+    BACKEND_IDS,
+    COMPRESSIONS_BY_ID,
+    COMPRESSION_IDS,
+)
 from .exceptions import FormatError
 
 MAGIC: Final = b"SRLZ"

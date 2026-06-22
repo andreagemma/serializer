@@ -77,10 +77,11 @@ class SerializerTests(unittest.TestCase):
                 raise error
             return real_import(name)
 
-        with patch("serializer._backends.import_module", side_effect=without_dill):
-            with warnings.catch_warnings(record=True) as caught:
-                warnings.simplefilter("always")
-                payload = serializer.dumps({"fallback": True})
+        with patch(
+            "serializer._backends.import_module", side_effect=without_dill
+        ), warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            payload = serializer.dumps({"fallback": True})
         self.assertTrue(
             any(issubclass(item.category, serializer.DependencyWarning) for item in caught)
         )
