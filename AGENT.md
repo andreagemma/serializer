@@ -288,16 +288,6 @@ README rules:
 - Use tables only for genuine comparisons or exact mappings.
 - Avoid development history, marketing filler, and undocumented placeholders.
 - Explain that integrity checks do not imply cryptographic authenticity.
-- If generated benchmark results are embedded, delimit them with stable comments so a
-  script can replace only that section:
-
-```markdown
-<!-- <distribution-name>-benchmark:start -->
-
-_Generated Markdown results._
-
-<!-- <distribution-name>-benchmark:end -->
-```
 
 ## GitHub Actions
 
@@ -421,3 +411,39 @@ A new repository is complete only when:
 - The README accurately explains installation, usage, security, development, and
   release operations.
 - Generated artifacts are ignored and the committed worktree is clean.
+
+
+## GITIGNORE
+usa questo gitignore di base
+
+```
+__pycache__/
+*.py[cod]
+*$py.class
+
+.Python
+.venv/
+venv/
+ENV/
+
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+build/
+dist/
+*.egg-info/
+
+.idea/
+.vscode/
+.DS_Store
+AGENT.md
+
+*.egg-info/
+.tox/
+.tooling/
+.agents/
+.vscode/
+```
