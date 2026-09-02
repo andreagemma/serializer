@@ -8,8 +8,11 @@ __pycache__/
 .tox/
 .tooling/
 .venv/
+.codex/
 build/
 dist/
 htmlcov/
 .agents/
 .vscode/
+AGENT.md
+
