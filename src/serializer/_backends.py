@@ -108,9 +108,7 @@ def _optional_module(module_name: str, feature: str, fallback: bool) -> Any | No
         return None
 
 
-def serializer_backend(
-    requested: str = "auto", *, fallback: bool = True
-) -> tuple[Any, str]:
+def serializer_backend(requested: str = "auto", *, fallback: bool = True) -> tuple[Any, str]:
     """Resolve dill/pickle only when serialization is actually requested."""
     if not isinstance(requested, str):
         raise TypeError("backend must be 'auto', 'dill', or 'pickle'")

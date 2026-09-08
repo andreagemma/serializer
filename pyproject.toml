@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
+authors = [{ name = "Andrea Gemma", email = "andrea.gemma@gmail.com" }]
 keywords = ["serialization", "dill", "pickle", "compression"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -20,6 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
 dependencies = ["dill>=0.3.8"]
@@ -43,9 +45,10 @@ dev = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/andreagemma/serializer"
 Documentation = "https://github.com/andreagemma/serializer#readme"
+Repository = "https://github.com/andreagemma/serializer"
 Issues = "https://github.com/andreagemma/serializer/issues"
-Source = "https://github.com/andreagemma/serializer"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

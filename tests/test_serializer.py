@@ -77,9 +77,10 @@ class SerializerTests(unittest.TestCase):
                 raise error
             return real_import(name)
 
-        with patch(
-            "serializer._backends.import_module", side_effect=without_dill
-        ), warnings.catch_warnings(record=True) as caught:
+        with (
+            patch("serializer._backends.import_module", side_effect=without_dill),
+            warnings.catch_warnings(record=True) as caught,
+        ):
             warnings.simplefilter("always")
             payload = serializer.dumps({"fallback": True})
         self.assertTrue(
@@ -101,22 +102,20 @@ class SerializerTests(unittest.TestCase):
 
         with patch("serializer._backends.import_module", side_effect=without_zstd):
             with self.assertWarns(serializer.DependencyWarning):
-                payload = serializer.dumps(
-                    "fallback", compression="zstd", backend="pickle"
-                )
+                payload = serializer.dumps("fallback", compression="zstd", backend="pickle")
             self.assertEqual(serializer.loads(payload), "fallback")
-            with self.assertWarns(serializer.DependencyWarning), self.assertRaises(
-                serializer.MissingDependencyError
+            with (
+                self.assertWarns(serializer.DependencyWarning),
+                self.assertRaises(serializer.MissingDependencyError),
             ):
-                serializer.dumps(
-                    "strict", compression="zstd", backend="pickle", fallback=False
-                )
+                serializer.dumps("strict", compression="zstd", backend="pickle", fallback=False)
 
             from serializer._format import pack
 
             impossible_to_decode = pack(b"compressed", "pickle", "zstd")
-            with self.assertWarns(serializer.DependencyWarning), self.assertRaises(
-                serializer.MissingDependencyError
+            with (
+                self.assertWarns(serializer.DependencyWarning),
+                self.assertRaises(serializer.MissingDependencyError),
             ):
                 serializer.loads(impossible_to_decode)
 
@@ -140,6 +139,6 @@ class SerializerTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             serializer.dump(1, io.StringIO(), backend="pickle")  # type: ignore[arg-type]
 
-    
+
 if __name__ == "__main__":
     unittest.main()

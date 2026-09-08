@@ -69,13 +69,7 @@ writes.
 ```python
 from serializer import Serializer
 
-codec = (
-    Serializer()
-    .using("gzip")
-    .at_level(9)
-    .with_backend("auto")
-    .atomic()
-)
+codec = Serializer().using("gzip").at_level(9).with_backend("auto").atomic()
 
 codec.dump({"id": 1}, "one.srl").dump({"id": 2}, "two.srl")
 assert codec.load("one.srl") == {"id": 1}

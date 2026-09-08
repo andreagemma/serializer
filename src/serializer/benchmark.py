@@ -83,9 +83,7 @@ class BenchmarkResult:
         if precision < 0:
             raise ValueError("precision must not be negative")
 
-        timings = self._table_to_markdown(
-            "codec / level (seconds)", self.values, precision
-        )
+        timings = self._table_to_markdown("codec / level (seconds)", self.values, precision)
         sizes = self._table_to_markdown("codec / level (bytes)", self.sizes, precision)
         return f"### Time\n\n{timings}\n\n### Serialized size\n\n{sizes}"
 

@@ -53,9 +53,7 @@ def dumps(
             f"could not serialize {type(obj).__module__}.{type(obj).__qualname__} "
             f"with {actual_backend}"
         ) from exc
-    payload, actual_compression = compress(
-        serialized, compression, level, fallback=fallback
-    )
+    payload, actual_compression = compress(serialized, compression, level, fallback=fallback)
     return pack(payload, actual_backend, actual_compression)
 
 

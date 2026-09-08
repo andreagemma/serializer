@@ -37,9 +37,10 @@ def test_benchmark_marks_missing_codec_with_x() -> None:
             raise error
         return real_import(name)
 
-    with patch(
-        "serializer._backends.import_module", side_effect=without_zstandard
-    ), warnings.catch_warnings():
+    with (
+        patch("serializer._backends.import_module", side_effect=without_zstandard),
+        warnings.catch_warnings(),
+    ):
         warnings.simplefilter("ignore")
         result = serializer.benchmark(
             {"value": 1},

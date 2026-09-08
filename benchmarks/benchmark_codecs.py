@@ -48,16 +48,12 @@ def parse_levels(value: str) -> tuple[int, ...]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=(
-            "Benchmark serializer codecs and print a codec-by-level Markdown pivot table."
-        )
+        description=("Benchmark serializer codecs and print a codec-by-level Markdown pivot table.")
     )
     parser.add_argument("--rows", type=positive_integer, default=100_000)
     parser.add_argument("--columns", type=positive_integer, default=10)
     parser.add_argument("--repeats", type=positive_integer, default=3)
-    parser.add_argument(
-        "--backend", choices=("auto", "dill", "pickle"), default="pickle"
-    )
+    parser.add_argument("--backend", choices=("auto", "dill", "pickle"), default="pickle")
     parser.add_argument(
         "--codecs", type=parse_codecs, default=serializer.COMPRESSION_CODECS, metavar="LIST"
     )
@@ -74,10 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def create_dataframe(pandas: Any, rows: int, columns: int) -> Any:
-    data = {
-        f"column_{column + 1}": range(column, rows + column)
-        for column in range(columns)
-    }
+    data = {f"column_{column + 1}": range(column, rows + column) for column in range(columns)}
     return pandas.DataFrame(data)
 
 
@@ -100,9 +93,7 @@ def update_readme(path: Path, report: str) -> None:
     before, remainder = content.split(RESULTS_START, 1)
     _, after = remainder.split(RESULTS_END, 1)
     replacement = f"{RESULTS_START}\n\n{report}\n\n{RESULTS_END}"
-    path.write_text(
-        f"{before}{replacement}{after}", encoding="utf-8", newline="\n"
-    )
+    path.write_text(f"{before}{replacement}{after}", encoding="utf-8", newline="\n")
 
 
 def main() -> int:
