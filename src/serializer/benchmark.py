@@ -63,6 +63,8 @@ class BenchmarkResult:
         matrix: Sequence[Sequence[BenchmarkValue | BenchmarkSize]],
         precision: int,
     ) -> str:
+        # Internal helper: table to markdown.
+        """Internal helper: table to markdown."""
         headers = [label, *(str(level) for level in self.levels)]
         lines = [
             "| " + " | ".join(headers) + " |",
@@ -88,10 +90,18 @@ class BenchmarkResult:
         return f"### Time\n\n{timings}\n\n### Serialized size\n\n{sizes}"
 
     def __str__(self) -> str:
+        """Implement `__str__`.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return self.to_markdown()
 
 
 def _normalize_codecs(codecs: Iterable[str | None] | None) -> tuple[str, ...]:
+    # Internal helper: normalize codecs.
+    """Internal helper: normalize codecs."""
     if codecs is None:
         return COMPRESSION_CODECS
 
@@ -108,6 +118,8 @@ def _normalize_codecs(codecs: Iterable[str | None] | None) -> tuple[str, ...]:
 
 
 def _normalize_levels(levels: Iterable[int]) -> tuple[int, ...]:
+    # Internal helper: normalize levels.
+    """Internal helper: normalize levels."""
     normalized: list[int] = []
     for level in levels:
         validate_level(level)

@@ -101,6 +101,8 @@ def loads(
 
 
 def _write_path(path: Path, data: bytes, atomic: bool) -> None:
+    # Internal helper: write path.
+    """Internal helper: write path."""
     if not atomic:
         path.write_bytes(data)
         return
@@ -207,6 +209,12 @@ class Serializer:
     CLEVEL_DEFAULT: ClassVar[int] = 5
 
     def __post_init__(self) -> None:
+        """Implement `__post_init__`.
+
+        Returns:
+            TODO describe return value.
+
+        """
         normalize_compression(self.compression)
         validate_level(self.level)
         if self.backend not in {"auto", "dill", "pickle"}:
@@ -231,6 +239,15 @@ class Serializer:
         return replace(self, backend=backend)
 
     def with_protocol(self, protocol: int | None) -> Serializer:
+        """With protocol.
+
+        Args:
+            protocol: TODO describe protocol.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return replace(self, protocol=protocol)
 
     def strict(self, enabled: bool = True) -> Serializer:
@@ -238,9 +255,27 @@ class Serializer:
         return replace(self, fallback=not enabled)
 
     def atomic(self, enabled: bool = True) -> Serializer:
+        """Atomic.
+
+        Args:
+            enabled: TODO describe enabled.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return replace(self, atomic_writes=enabled)
 
     def dumps(self, obj: Any) -> bytes:
+        """Dumps.
+
+        Args:
+            obj: TODO describe obj.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return dumps(
             obj,
             compression=self.compression,
@@ -251,9 +286,28 @@ class Serializer:
         )
 
     def loads(self, data: bytes | bytearray | memoryview) -> Any:
+        """Loads.
+
+        Args:
+            data: TODO describe data.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return loads(data, compression=self.compression, backend=self.backend)
 
     def dump(self, obj: Any, file: Writable) -> Serializer:
+        """Dump.
+
+        Args:
+            obj: TODO describe obj.
+            file: TODO describe file.
+
+        Returns:
+            TODO describe return value.
+
+        """
         dump(
             obj,
             file,
@@ -269,4 +323,13 @@ class Serializer:
     save = dump
 
     def load(self, file: Readable) -> Any:
+        """Load.
+
+        Args:
+            file: TODO describe file.
+
+        Returns:
+            TODO describe return value.
+
+        """
         return load(file, compression=self.compression, backend=self.backend)

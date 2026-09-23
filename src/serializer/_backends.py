@@ -71,6 +71,15 @@ def normalize_compression(name: str | None) -> str:
 
 
 def validate_level(level: int) -> None:
+    """Validate level.
+
+    Args:
+        level: TODO describe level.
+
+    Returns:
+        TODO describe return value.
+
+    """
     if isinstance(level, bool) or not isinstance(level, int):
         raise TypeError("level must be an integer")
     if not 0 <= level <= 9:
@@ -79,12 +88,15 @@ def validate_level(level: int) -> None:
 
 def _as_bytes(value: Any, feature: str) -> bytes:
     """Validate the bytes-like contract of a dynamically loaded backend."""
+    # Internal helper: as bytes.
     if not isinstance(value, bytes | bytearray | memoryview):
         raise TypeError(f"{feature} returned {type(value).__name__}, expected bytes-like data")
     return bytes(value)
 
 
 def _missing_dependency(feature: str, package: str, fallback: bool) -> None:
+    # Internal helper: missing dependency.
+    """Internal helper: missing dependency."""
     action = "using the safe default fallback" if fallback else "no fallback is permitted"
     warnings.warn(
         f"{package!r} is not installed; {feature} is unavailable, {action}.",
@@ -98,6 +110,8 @@ def _missing_dependency(feature: str, package: str, fallback: bool) -> None:
 
 
 def _optional_module(module_name: str, feature: str, fallback: bool) -> Any | None:
+    # Internal helper: optional module.
+    """Internal helper: optional module."""
     try:
         return import_module(module_name)
     except ModuleNotFoundError as exc:

@@ -28,6 +28,17 @@ class Envelope:
 
 
 def pack(payload: bytes, backend: str, compression: str) -> bytes:
+    """Pack.
+
+    Args:
+        payload: TODO describe payload.
+        backend: TODO describe backend.
+        compression: TODO describe compression.
+
+    Returns:
+        TODO describe return value.
+
+    """
     checksum = zlib.crc32(payload) & 0xFFFFFFFF
     header = _HEADER.pack(
         MAGIC,
